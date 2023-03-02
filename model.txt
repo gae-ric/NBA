@@ -1,0 +1,34 @@
+
+        model {
+
+        for (sIdx in 1:Nsubj) { #for each player
+
+            #Binomial likelihood for z
+            z[sIdx] ~ dbin(theta[sIdx], N[sIdx]) 
+            
+            #Beta prior for theta 
+            theta[sIdx] ~ dbeta(omega[c[sIdx]]*(kappa[c[sIdx]]-2)+1, 
+                                (1-omega[c[sIdx]])*(kappa[c[sIdx]]-2)+1)
+                                
+        }
+
+        for (cIdx in 1:Ncat) { # for each category
+
+            #Beta hyperprior for omega_c
+            omega[cIdx] ~ dbeta(omegaO*(kappaO-2)+1, 
+                                (1-omegaO)*(kappaO-2)+1)
+
+            #Gamma hyperprior for kappa_c
+            kappa[cIdx] <- kappaMinusTwo[cIdx] + 2
+            kappaMinusTwo[cIdx] ~ dgamma(0.01, 0.01) #mean=1, var=10 
+
+        }
+
+        #Uniform hyper-hyperprior for omega_O overall
+        omegaO ~ dbeta(1.0, 1.0)  
+
+        #Gamma hyper-hyperprior for kappa_O overall 
+        kappaO <- kappaMinusTwoO + 2 
+        kappaMinusTwoO ~ dgamma(0.01, 0.01)  #mean=1, var=10 
+
+        }

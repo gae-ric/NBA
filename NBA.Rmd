@@ -1,0 +1,27 @@
+```{r}
+players <- read.csv("data/NBA_2021-22_RS_Total_Player_Stats.csv", sep=",")
+players <- players[-c(which(duplicated(players$Player))), ]
+players <- players[, c('Player', 'Pos', 'FT', 'FTA')]
+colnames(players)[3] <- 'FTM'
+players <- players[players$FTA!=0, ]
+```
+
+```{r}
+source("Jags-Ybinom-XnomSsubjCcat-MbinomBetaOmegaKappa.R")
+```
+```{r}
+# Generate the MCMC chain:
+startTime = proc.time()
+mcmcCoda = genMCMC( data=players , 
+                    zName="FTM", NName="FTA", sName="Player", cName="Pos",
+                    numSavedSteps=70000 , #saveName=fileNameRoot ,
+                    thinSteps=100 )
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+```
+```{r}
+v <- c(1:20)
+print(sum(v > 5))
+```
+
